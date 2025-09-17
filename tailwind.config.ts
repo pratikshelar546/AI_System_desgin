@@ -66,6 +66,10 @@ export default {
           queue: "hsl(var(--node-queue))",
           storage: "hsl(var(--node-storage))",
           cdn: "hsl(var(--node-cdn))",
+          loadbalancer: "hsl(var(--node-loadbalancer))",
+          monitor: "hsl(var(--node-monitor))",
+          security: "hsl(var(--node-security))",
+          analytics: "hsl(var(--node-analytics))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -82,6 +86,7 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-canvas': 'var(--gradient-canvas)',
         'gradient-node': 'var(--gradient-node)',
+        'gradient-node-glow': 'var(--gradient-node-glow)',
       },
       boxShadow: {
         'sm': 'var(--shadow-sm)',
@@ -89,10 +94,12 @@ export default {
         'lg': 'var(--shadow-lg)',
         'node': 'var(--shadow-node)',
         'panel': 'var(--shadow-panel)',
+        'glow': 'var(--shadow-glow)',
       },
       transitionTimingFunction: {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
         'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       },
       borderRadius: {
         lg: "var(--radius)",

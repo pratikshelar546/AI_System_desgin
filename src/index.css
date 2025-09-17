@@ -6,106 +6,17 @@
 
 @layer base {
   :root {
-    /* Base Colors */
-    --background: 240 10% 98%;
-    --foreground: 240 10% 3.9%;
-    --canvas-background: 240 20% 96%;
-
-    /* Card & Surface */
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
-    /* Popover */
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    /* Primary Brand */
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 217 91% 70%;
-
-    /* Secondary */
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
-
-    /* Muted */
-    --muted: 240 5% 96%;  
-    --muted-foreground: 240 4% 46%;
-
-    /* Accent */
-    --accent: 217 91% 95%;
-    --accent-foreground: 217 91% 40%;
-
-    /* Status Colors */
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-
-    /* Borders & Inputs */
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 217 91% 60%;
-
-    /* Node Colors */
-    --node-client: 142 76% 45%;
-    --node-gateway: 217 91% 60%;
-    --node-service: 262 83% 58%;
-    --node-database: 25 95% 53%;
-    --node-cache: 0 84% 60%;
-    --node-queue: 38 92% 50%;
-    --node-storage: 199 89% 48%;
-    --node-cdn: 280 100% 70%;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 70%));
-    --gradient-canvas: linear-gradient(180deg, hsl(240 20% 98%), hsl(240 20% 96%));
-    --gradient-node: linear-gradient(135deg, hsl(240 5% 98%), hsl(240 5% 96%));
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(240 6% 10% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(240 6% 10% / 0.1), 0 2px 4px -1px hsl(240 6% 10% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(240 6% 10% / 0.1), 0 4px 6px -2px hsl(240 6% 10% / 0.05);
-    --shadow-node: 0 4px 12px hsl(240 6% 10% / 0.1);
-    --shadow-panel: 0 8px 30px hsl(240 6% 10% / 0.12);
-
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    /* Base Colors */
+    /* Base Colors - Dark Mode Only */
     --background: 240 10% 4%;
     --foreground: 240 5% 98%;
     --canvas-background: 240 10% 6%;
 
     /* Card & Surface */
-    --card: 240 10% 4%;
+    --card: 240 8% 8%;
     --card-foreground: 240 5% 98%;
 
     /* Popover */
-    --popover: 240 10% 4%;
+    --popover: 240 8% 8%;
     --popover-foreground: 240 5% 98%;
 
     /* Primary Brand */
@@ -125,18 +36,63 @@
     --accent: 240 4% 16%;
     --accent-foreground: 217 91% 70%;
 
+    /* Status Colors */
+    --success: 142 76% 50%;
+    --success-foreground: 240 10% 4%;
+    --warning: 38 92% 60%;
+    --warning-foreground: 240 10% 4%;
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 240 10% 4%;
+
     /* Borders & Inputs */
     --border: 240 4% 16%;
     --input: 240 4% 16%;
     --ring: 217 91% 70%;
-    --sidebar-background: 240 5.9% 10%;
+
+    /* Enhanced Node Colors */
+    --node-client: 142 76% 55%;      /* Green for frontend */
+    --node-gateway: 217 91% 70%;     /* Blue for API Gateway */
+    --node-service: 262 83% 68%;     /* Purple for microservices */
+    --node-database: 25 95% 63%;     /* Orange for databases */
+    --node-cache: 0 84% 70%;         /* Red for cache/memory */
+    --node-queue: 38 92% 60%;        /* Yellow for queues */
+    --node-storage: 199 89% 58%;     /* Cyan for storage */
+    --node-cdn: 280 100% 80%;        /* Magenta for CDN */
+    --node-loadbalancer: 120 60% 50%; /* Forest green */
+    --node-monitor: 200 100% 60%;     /* Sky blue */
+    --node-security: 0 70% 50%;       /* Dark red */
+    --node-analytics: 45 100% 55%;    /* Gold */
+
+    /* Enhanced Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 70%), hsl(217 91% 80%));
+    --gradient-canvas: radial-gradient(ellipse at top, hsl(240 10% 8%), hsl(240 10% 4%));
+    --gradient-node: linear-gradient(135deg, hsl(240 8% 10%), hsl(240 8% 8%));
+    --gradient-node-glow: linear-gradient(135deg, hsl(240 8% 12%), hsl(240 8% 10%));
+
+    /* Enhanced Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(240 6% 2% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(240 6% 2% / 0.4), 0 2px 4px -1px hsl(240 6% 2% / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(240 6% 2% / 0.5), 0 4px 6px -2px hsl(240 6% 2% / 0.3);
+    --shadow-node: 0 4px 12px hsl(240 6% 2% / 0.4);
+    --shadow-panel: 0 8px 30px hsl(240 6% 2% / 0.5);
+    --shadow-glow: 0 0 20px hsl(217 91% 70% / 0.3);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 240 8% 6%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-primary: 217 91% 70%;
+    --sidebar-primary-foreground: 240 10% 4%;
+    --sidebar-accent: 240 4% 12%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-border: 240 4% 12%;
+    --sidebar-ring: 217 91% 70%;
   }
 }
 
@@ -147,5 +103,37 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+  
+  .dark {
+    color-scheme: dark;
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px hsl(217 91% 70% / 0.2);
+  }
+  to {
+    box-shadow: 0 0 30px hsl(217 91% 70% / 0.4);
   }
 }

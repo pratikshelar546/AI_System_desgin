@@ -13,23 +13,28 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { Button } from '@/components/ui/button';
-import { Save, Upload, Download, FileJson } from 'lucide-react';
+import { Save, Upload, Download, FileJson, Server } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 import NodeToolbar from './NodeToolbar';
-import PropertiesPanel from './PropertiesPanel';
+import EnhancedPropertiesPanel from './EnhancedPropertiesPanel';
 import AIReviewPanel from './AIReviewPanel';
-import SystemNode from './SystemNode';
+import ResizableSystemNode from './ResizableSystemNode';
 import { DiagramData, DiagramNode, DiagramEdge, SystemNodeData, AIReview } from '@/types/diagram';
 
 const nodeTypes = {
-  systemNode: SystemNode,
+  systemNode: ResizableSystemNode,
 };
 
 const defaultEdgeOptions = {
   type: 'smoothstep',
   markerEnd: { type: MarkerType.ArrowClosed },
-  style: { strokeWidth: 2, stroke: '#64748b' },
+  style: { 
+    strokeWidth: 3, 
+    stroke: 'hsl(217 91% 70%)',
+    filter: 'drop-shadow(0 0 4px hsl(217 91% 70% / 0.3))'
+  },
+  animated: true,
 };
 
 let nodeId = 0;
@@ -104,6 +109,8 @@ export default function ArchitectureDiagram() {
           type: type as SystemNodeData['type'],
           name: `${type.charAt(0).toUpperCase() + type.slice(1)} ${nodeId}`,
           notes: '',
+          width: 180,
+          height: 120,
         },
       };
 
@@ -210,19 +217,26 @@ export default function ArchitectureDiagram() {
       
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-card border-b border-border p-4 flex items-center justify-between shadow-sm">
-          <h1 className="text-xl font-semibold text-foreground">Architecture Designer</h1>
+        <div className="bg-card/95 backdrop-blur-sm border-b border-border p-4 flex items-center justify-between shadow-panel">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <Server className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+              System Architecture Designer
+            </h1>
+          </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={saveDesign}>
+            <Button variant="outline" size="sm" onClick={saveDesign} className="hover:shadow-glow transition-all duration-300">
               <Download className="w-4 h-4 mr-2" />
-              Export
+              Export Design
             </Button>
             
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="sm" asChild className="hover:shadow-glow transition-all duration-300">
               <label htmlFor="import-file" className="cursor-pointer">
                 <Upload className="w-4 h-4 mr-2" />
-                Import
+                Import Design
               </label>
             </Button>
             <input
@@ -237,9 +251,10 @@ export default function ArchitectureDiagram() {
               variant={showAIPanel ? "default" : "outline"} 
               size="sm"
               onClick={() => setShowAIPanel(!showAIPanel)}
+              className="bg-gradient-primary hover:shadow-glow transition-all duration-300"
             >
               <FileJson className="w-4 h-4 mr-2" />
-              AI Review
+              AI Analysis
             </Button>
           </div>
         </div>
@@ -270,7 +285,7 @@ export default function ArchitectureDiagram() {
           </div>
           
           {selectedNode && (
-            <PropertiesPanel
+            <EnhancedPropertiesPanel
               selectedNode={selectedNode}
               onUpdateNode={updateNode}
               onClose={() => setSelectedNode(null)}

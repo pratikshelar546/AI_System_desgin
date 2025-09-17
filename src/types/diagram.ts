@@ -1,8 +1,10 @@
 export interface SystemNodeData {
   id: string;
-  type: 'client' | 'gateway' | 'service' | 'database' | 'cache' | 'queue' | 'storage' | 'cdn';
+  type: 'client' | 'gateway' | 'service' | 'database' | 'cache' | 'queue' | 'storage' | 'cdn' | 'loadbalancer' | 'monitor' | 'security' | 'analytics';
   name: string;
   notes?: string;
+  width?: number;
+  height?: number;
   customProperties?: Record<string, any>;
 }
 
