@@ -27,7 +27,7 @@ const nodeTypes = {
 };
 
 const defaultEdgeOptions = {
-  type: 'bezier',
+  type: 'smoothstep',
   markerEnd: { 
     type: MarkerType.ArrowClosed,
     width: 20,
@@ -35,15 +35,11 @@ const defaultEdgeOptions = {
     color: 'hsl(217 91% 70%)'
   },
   style: { 
-    strokeWidth: 2, 
+    strokeWidth: 3, 
     stroke: 'hsl(217 91% 70%)',
-    filter: 'drop-shadow(0 2px 4px hsl(217 91% 70% / 0.2))'
+    filter: 'drop-shadow(0 0 4px hsl(217 91% 70% / 0.3))'
   },
-  animated: false,
-  pathOptions: {
-    offset: 10,
-    borderRadius: 8
-  }
+  animated: true,
 };
 
 let nodeId = 0;
