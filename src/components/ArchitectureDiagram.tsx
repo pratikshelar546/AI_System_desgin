@@ -27,14 +27,23 @@ const nodeTypes = {
 };
 
 const defaultEdgeOptions = {
-  type: 'smoothstep',
-  markerEnd: { type: MarkerType.ArrowClosed },
-  style: { 
-    strokeWidth: 3, 
-    stroke: 'hsl(217 91% 70%)',
-    filter: 'drop-shadow(0 0 4px hsl(217 91% 70% / 0.3))'
+  type: 'bezier',
+  markerEnd: { 
+    type: MarkerType.ArrowClosed,
+    width: 20,
+    height: 20,
+    color: 'hsl(217 91% 70%)'
   },
-  animated: true,
+  style: { 
+    strokeWidth: 2, 
+    stroke: 'hsl(217 91% 70%)',
+    filter: 'drop-shadow(0 2px 4px hsl(217 91% 70% / 0.2))'
+  },
+  animated: false,
+  pathOptions: {
+    offset: 10,
+    borderRadius: 8
+  }
 };
 
 let nodeId = 0;
@@ -278,6 +287,10 @@ export default function ArchitectureDiagram() {
               onPaneClick={onPaneClick}
               nodeTypes={nodeTypes}
               defaultEdgeOptions={defaultEdgeOptions}
+              connectionRadius={20}
+              nodesDraggable={true}
+              nodesConnectable={true}
+              elementsSelectable={true}
               fitView
               className="bg-transparent"
             >
