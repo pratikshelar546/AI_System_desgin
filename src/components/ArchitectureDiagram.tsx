@@ -188,40 +188,40 @@ export default function ArchitectureDiagram() {
     const minSpacing = 30; // Reduced spacing for compact layout
     
     // Define compact zones with tighter spacing
-    const zoneMapping = {
-      // Frontend zone
-      client: { x: 0, y: 0 }, frontend: { x: 0, y: 0 }, web: { x: 0, y: 0 }, mobile: { x: 0, y: 0 }, ui: { x: 0, y: 0 },
+    // const zoneMapping = {
+    //   // Frontend zone
+    //   client: { x: 0, y: 0 }, frontend: { x: 0, y: 0 }, web: { x: 0, y: 0 }, mobile: { x: 0, y: 0 }, ui: { x: 0, y: 0 },
       
-      // CDN zone (close to frontend)
-      cdn: { x: 0.4, y: -0.3 }, static: { x: 0.4, y: -0.3 }, assets: { x: 0.4, y: -0.3 },
+    //   // CDN zone (close to frontend)
+    //   cdn: { x: 0.4, y: -0.3 }, static: { x: 0.4, y: -0.3 }, assets: { x: 0.4, y: -0.3 },
       
-      // Infrastructure zone
-      loadbalancer: { x: 1, y: 0 }, lb: { x: 1, y: 0 }, infrastructure: { x: 1, y: 0 }, proxy: { x: 1, y: 0 },
+    //   // Infrastructure zone
+    //   loadbalancer: { x: 1, y: 0 }, lb: { x: 1, y: 0 }, infrastructure: { x: 1, y: 0 }, proxy: { x: 1, y: 0 },
       
-      // Gateway zone
-      gateway: { x: 1.6, y: 0 }, apigateway: { x: 1.6, y: 0 }, router: { x: 1.6, y: 0 }, ingress: { x: 1.6, y: 0 },
+    //   // Gateway zone
+    //   gateway: { x: 1.6, y: 0 }, apigateway: { x: 1.6, y: 0 }, router: { x: 1.6, y: 0 }, ingress: { x: 1.6, y: 0 },
       
-      // Security zone (above services)
-      security: { x: 2.2, y: -0.4 }, middleware: { x: 2.2, y: -0.4 }, auth: { x: 2.2, y: -0.4 }, mesh: { x: 2.2, y: -0.4 },
+    //   // Security zone (above services)
+    //   security: { x: 2.2, y: -0.4 }, middleware: { x: 2.2, y: -0.4 }, auth: { x: 2.2, y: -0.4 }, mesh: { x: 2.2, y: -0.4 },
       
-      // Services zone (main vertical stack)
-      service: { x: 2.2, y: 0 }, microservice: { x: 2.2, y: 0 }, backend: { x: 2.2, y: 0 },
+    //   // Services zone (main vertical stack)
+    //   service: { x: 2.2, y: 0 }, microservice: { x: 2.2, y: 0 }, backend: { x: 2.2, y: 0 },
       
-      // Cache zone (below services)
-      cache: { x: 2.2, y: 0.6 }, redis: { x: 2.2, y: 0.6 }, memcache: { x: 2.2, y: 0.6 },
+    //   // Cache zone (below services)
+    //   cache: { x: 2.2, y: 0.6 }, redis: { x: 2.2, y: 0.6 }, memcache: { x: 2.2, y: 0.6 },
       
-      // Queue zone (right of services)
-      queue: { x: 2.8, y: 0.2 }, kafka: { x: 2.8, y: 0.2 }, rabbitmq: { x: 2.8, y: 0.2 }, messaging: { x: 2.8, y: 0.2 },
+    //   // Queue zone (right of services)
+    //   queue: { x: 2.8, y: 0.2 }, kafka: { x: 2.8, y: 0.2 }, rabbitmq: { x: 2.8, y: 0.2 }, messaging: { x: 2.8, y: 0.2 },
       
-      // Database zone (far right)
-      database: { x: 3.4, y: 0 }, db: { x: 3.4, y: 0 }, postgres: { x: 3.4, y: 0 }, mysql: { x: 3.4, y: 0 }, mongodb: { x: 3.4, y: 0 }, nosql: { x: 3.4, y: 0 },
+    //   // Database zone (far right)
+    //   database: { x: 3.4, y: 0 }, db: { x: 3.4, y: 0 }, postgres: { x: 3.4, y: 0 }, mysql: { x: 3.4, y: 0 }, mongodb: { x: 3.4, y: 0 }, nosql: { x: 3.4, y: 0 },
       
-      // Analytics zone (bottom right)
-      analytics: { x: 3.8, y: 0.5 }, monitoring: { x: 2.5, y: -0.8 }, logs: { x: 2.5, y: -0.8 }, metrics: { x: 2.5, y: -0.8 },
+    //   // Analytics zone (bottom right)
+    //   analytics: { x: 3.8, y: 0.5 }, monitoring: { x: 2.5, y: -0.8 }, logs: { x: 2.5, y: -0.8 }, metrics: { x: 2.5, y: -0.8 },
       
-      // WebSocket zone (below gateway)
-      websocket: { x: 1.6, y: 0.6 }, realtime: { x: 1.6, y: 0.6 }, streaming: { x: 1.6, y: 0.6 }
-    };
+    //   // WebSocket zone (below gateway)
+    //   websocket: { x: 1.6, y: 0.6 }, realtime: { x: 1.6, y: 0.6 }, streaming: { x: 1.6, y: 0.6 }
+    // };
     
     // Compact spacing multipliers
     const baseXSpacing = 280; // Reduced from 400px
@@ -230,14 +230,13 @@ export default function ArchitectureDiagram() {
     const startY = 200; // Closer to top
     
     // Group nodes by type for better organization
+    // console.log(nodes,"nodes");
     const typeGroups = new Map();
-    nodes.forEach(node => {
-      console.log(node,"node");
-      const nodeType = (node.type || '').toLowerCase();
-      const zone = zoneMapping[nodeType as keyof typeof zoneMapping] || { x: 2.2, y: 0 };
+    nodes?.forEach(node => {
+      // console.log(node,"node");
       
-      const key = `${zone.x}-${zone.y}`;
-      console.log(node.type,nodeType,zone,key);
+      const key = `${node.zone.x}-${node.zone.y}`;
+      // console.log(node.type,key);
       
       if (!typeGroups.has(key)) {
         typeGroups.set(key, []);
@@ -290,6 +289,7 @@ export default function ArchitectureDiagram() {
   const loadArchitectureData = (architectureData: any) => {
     // Calculate smart positions
     const positions = calculateNodePositions(architectureData.nodes, architectureData.edges);
+    console.log(positions,"positions");
     
     const nodes = architectureData.nodes.map((n: any) => ({
       id: n.id,
@@ -387,6 +387,8 @@ useEffect(() => {
   if(userDesign) {
     loadDesign();
   }
+  console.log(userDesign,"userDesign");
+  
 }, [userDesign]);
 
   return (
