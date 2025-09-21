@@ -1,4 +1,4 @@
-import { memo, useState, useRef, useCallback } from 'react';
+import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { 
   Monitor, 
@@ -12,43 +12,158 @@ import {
   Scale,
   Activity,
   Lock,
-  BarChart3
+  BarChart3,
+  Circle,
+  Cloud,
+  Cpu,
+  Layers,
+  Network,
+  Router,
+  Settings
 } from 'lucide-react';
 import { SystemNodeData } from '@/types/diagram';
 
 const nodeIcons = {
+  // Frontend
   client: Monitor,
-  gateway: Shield,
-  service: Server,
-  database: Database,
-  cache: Zap,
-  queue: MessageSquare,
-  storage: HardDrive,
+  frontend: Monitor,
+  web: Monitor,
+  mobile: Monitor,
+  ui: Monitor,
+  
+  // Infrastructure
   cdn: Globe,
+  static: Globe,
+  assets: Globe,
   loadbalancer: Scale,
-  monitor: Activity,
+  lb: Scale,
+  infrastructure: Cpu,
+  proxy: Router,
+  
+  // API Layer
+  gateway: Shield,
+  apigateway: Shield,
+  router: Router,
+  ingress: Router,
+  
+  // Security/Middleware
   security: Lock,
+  middleware: Layers,
+  auth: Lock,
+  mesh: Network,
+  
+  // Business Services
+  service: Server,
+  microservice: Server,
+  backend: Server,
+  
+  // Data Access
+  cache: Zap,
+  redis: Zap,
+  memcache: Zap,
+  queue: MessageSquare,
+  kafka: MessageSquare,
+  rabbitmq: MessageSquare,
+  messaging: MessageSquare,
+  
+  // Data Layer
+  database: Database,
+  db: Database,
+  postgres: Database,
+  mysql: Database,
+  mongodb: Database,
+  nosql: Database,
+  storage: HardDrive,
+  
+  // Analytics/Monitoring
   analytics: BarChart3,
+  monitoring: Activity,
+  logs: Activity,
+  metrics: BarChart3,
+  
+  // Real-time
+  websocket: Cloud,
+  realtime: Cloud,
+  streaming: Cloud,
+  
+  // Fallback
+  default: Circle
 };
 
 const nodeColors = {
+  // Frontend
   client: 'node-client',
-  gateway: 'node-gateway', 
-  service: 'node-service',
-  database: 'node-database',
-  cache: 'node-cache',
-  queue: 'node-queue',
-  storage: 'node-storage',
+  frontend: 'node-client',
+  web: 'node-client',
+  mobile: 'node-client',
+  ui: 'node-client',
+  
+  // Infrastructure
   cdn: 'node-cdn',
+  static: 'node-cdn',
+  assets: 'node-cdn',
   loadbalancer: 'node-loadbalancer',
-  monitor: 'node-monitor',
+  lb: 'node-loadbalancer',
+  infrastructure: 'node-loadbalancer',
+  proxy: 'node-loadbalancer',
+  
+  // API Layer
+  gateway: 'node-gateway',
+  apigateway: 'node-gateway',
+  router: 'node-gateway',
+  ingress: 'node-gateway',
+  
+  // Security/Middleware
   security: 'node-security',
+  middleware: 'node-security',
+  auth: 'node-security',
+  mesh: 'node-security',
+  
+  // Business Services
+  service: 'node-service',
+  microservice: 'node-service',
+  backend: 'node-service',
+  
+  // Data Access
+  cache: 'node-cache',
+  redis: 'node-cache',
+  memcache: 'node-cache',
+  queue: 'node-queue',
+  kafka: 'node-queue',
+  rabbitmq: 'node-queue',
+  messaging: 'node-queue',
+  
+  // Data Layer
+  database: 'node-database',
+  db: 'node-database',
+  postgres: 'node-database',
+  mysql: 'node-database',
+  mongodb: 'node-database',
+  nosql: 'node-database',
+  storage: 'node-storage',
+  
+  // Analytics/Monitoring
   analytics: 'node-analytics',
+  monitoring: 'node-monitor',
+  logs: 'node-monitor',
+  metrics: 'node-analytics',
+  
+  // Real-time
+  websocket: 'node-monitor',
+  realtime: 'node-monitor',
+  streaming: 'node-monitor',
+  
+  // Fallback
+  default: 'node-service'
 };
 
-export default memo(({ data, selected }: NodeProps<SystemNodeData>) => {
-  const Icon = nodeIcons[data.type];
-  const colorClass = nodeColors[data.type];
+interface ResizableSystemNodeProps extends NodeProps<SystemNodeData> {
+  updateNode?: (nodeId: string, updates: Partial<SystemNodeData>) => void;
+}
+
+export default memo(({ data, selected, id, updateNode }: ResizableSystemNodeProps) => {
+  const Icon = nodeIcons[data.type] || nodeIcons.default;
+  const colorClass = nodeColors[data.type] || nodeColors.default;
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -58,6 +173,8 @@ export default memo(({ data, selected }: NodeProps<SystemNodeData>) => {
     height: data.height || 120
   });
 
+  
+  
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsResizing(true);
@@ -74,15 +191,24 @@ export default memo(({ data, selected }: NodeProps<SystemNodeData>) => {
       setDimensions({ width: newWidth, height: newHeight });
     };
 
-    const handleMouseUp = () => {
+      const handleMouseUp = () => {
       setIsResizing(false);
+      
+      // Update node data with new dimensions
+      if (updateNode && id) {
+        updateNode(id, {
+          width: dimensions.width,
+          height: dimensions.height
+        });
+      }
+      
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }, [dimensions]);
+  }, [dimensions, updateNode, id]);
 
   const handleNameEdit = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -92,8 +218,12 @@ export default memo(({ data, selected }: NodeProps<SystemNodeData>) => {
 
   const handleNameSave = useCallback(() => {
     setIsEditing(false);
-    // You'll need to pass updateNode function as prop to update the node
-  }, []);
+    
+    // Update node data with new name if it changed
+    if (updateNode && id && editValue !== data.name) {
+      updateNode(id, { name: editValue });
+    }
+  }, [updateNode, id, editValue, data.name]);
 
   const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -103,6 +233,14 @@ export default memo(({ data, selected }: NodeProps<SystemNodeData>) => {
       setEditValue(data.name);
     }
   }, [handleNameSave, data.name]);
+
+  // Sync dimensions with data changes
+  useEffect(() => {
+    setDimensions({
+      width: data.width || 180,
+      height: data.height || 120
+    });
+  }, [data.width, data.height]);
 
   return (
     <div 
@@ -122,64 +260,6 @@ export default memo(({ data, selected }: NodeProps<SystemNodeData>) => {
         minHeight: 100
       }}
     >
-      {/* Corner Connection Points */}
-      <Handle
-        type="source"
-        position={Position.Top}
-        id="top-left"
-        style={{ left: '20%', top: '-2px' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Top}
-        id="top-right" 
-        style={{ left: '80%', top: '-2px' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id="bottom-left"
-        style={{ left: '20%', bottom: '-2px' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id="bottom-right"
-        style={{ left: '80%', bottom: '-2px' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Left}
-        id="left-top"
-        style={{ left: '-2px', top: '30%' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Left}
-        id="left-bottom"
-        style={{ left: '-2px', top: '70%' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="right-top"
-        style={{ right: '-2px', top: '30%' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="right-bottom"
-        style={{ right: '-2px', top: '70%' }}
-        className="w-3 h-3 !bg-primary/80 border-2 border-background rounded-full hover:!bg-primary hover:scale-110 transition-all duration-200 shadow-sm"
-      />
-
       {/* Main Connection Points */}
       <Handle
         type="target"

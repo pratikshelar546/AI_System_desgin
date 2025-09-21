@@ -66,62 +66,79 @@ export default function AIReviewPanel({ diagramData, onGetReview }: AIReviewPane
 
       {review && (
         <Tabs defaultValue="critique" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="critique" className="text-xs">Critique</TabsTrigger>
-            <TabsTrigger value="suggestions" className="text-xs">Suggestions</TabsTrigger>
-            <TabsTrigger value="references" className="text-xs">References</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-4">
+            <TabsTrigger value="critique" className="text-xs font-medium">Critique</TabsTrigger>
+            <TabsTrigger value="suggestions" className="text-xs font-medium">Suggestions</TabsTrigger>
+            <TabsTrigger value="references" className="text-xs font-medium">References</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="critique" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Architecture Critique</CardTitle>
+          <TabsContent value="critique" className="mt-0">
+            <Card className="border-primary/20 shadow-glow/10">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  Architecture Critique
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {review.critique}
-                </p>
+              <CardContent className="pt-0">
+                <div className="max-h-64 overflow-y-auto scrollbar-glow">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {review.critique}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="suggestions" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Improvement Suggestions</CardTitle>
+          <TabsContent value="suggestions" className="mt-0">
+            <Card className="border-warning/20 shadow-glow/10">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <div className="w-2 h-2 bg-warning rounded-full animate-pulse"></div>
+                  Improvement Suggestions
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {review.suggestions.map((suggestion, index) => (
-                    <li key={index} className="text-sm text-muted-foreground">
-                      <span className="inline-block w-2 h-2 bg-primary rounded-full mr-3"></span>
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
+              <CardContent className="pt-0">
+                <div className="max-h-64 overflow-y-auto scrollbar-glow">
+                  <ul className="space-y-3">
+                    {review.suggestions.map((suggestion, index) => (
+                      <li key={index} className="text-sm text-muted-foreground group">
+                        <div className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors">
+                          <span className="inline-block w-2 h-2 bg-primary rounded-full mt-2 group-hover:scale-125 transition-transform"></span>
+                          <span>{suggestion}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="references" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Further Reading</CardTitle>
+          <TabsContent value="references" className="mt-0">
+            <Card className="border-success/20 shadow-glow/10">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                  Further Reading
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {review.references.map((reference, index) => (
-                    <li key={index}>
-                      <a 
-                        href="#" 
-                        className="text-sm text-primary hover:text-primary-glow flex items-center gap-2 group"
-                      >
-                        <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                        {reference}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+              <CardContent className="pt-0">
+                <div className="max-h-64 overflow-y-auto scrollbar-glow">
+                  <ul className="space-y-3">
+                    {review.references.map((reference, index) => (
+                      <li key={index}>
+                        <a 
+                          href="#" 
+                          className="text-sm text-primary hover:text-primary-glow flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/30 transition-all duration-200"
+                        >
+                          <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
+                          <span className="truncate">{reference}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

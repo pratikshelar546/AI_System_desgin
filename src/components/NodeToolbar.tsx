@@ -34,11 +34,7 @@ interface NodeToolbarProps {
 
 export default function NodeToolbar({ onDragStart }: NodeToolbarProps) {
   return (
-    <div className="bg-card border-r border-border w-24 p-3 flex flex-col gap-2 shadow-panel overflow-y-auto">
-      <h3 className="text-xs font-medium text-muted-foreground text-center mb-2">
-        System Components
-      </h3>
-      
+    <div className="bg-card border-r border-border w-full p-3 flex flex-col gap-2 shadow-panel overflow-y-auto">      
       {nodeTypes.map(({ type, icon: Icon, label, color }) => (
         <div
           key={type}

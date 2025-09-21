@@ -188,3 +188,107 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* Modern Custom Scrollbar Styles */
+@layer utilities {
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.4);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Firefox */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.4) hsl(var(--muted) / 0.3);
+  }
+
+  /* Glowing scrollbar variant */
+  .scrollbar-glow::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-glow::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.2);
+    border-radius: 4px;
+  }
+
+  .scrollbar-glow::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.6), hsl(var(--primary-glow) / 0.8));
+    border-radius: 4px;
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .scrollbar-glow::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.8), hsl(var(--primary-glow) / 1));
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.5);
+    transform: scale(1.1);
+  }
+
+  /* Firefox glowing variant */
+  .scrollbar-glow {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.6) hsl(var(--muted) / 0.2);
+  }
+
+  /* Minimal scrollbar variant */
+  .scrollbar-minimal::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Firefox minimal variant */
+  .scrollbar-minimal {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  /* Auto-apply to common scrollable elements */
+  .scroll-auto {
+    @apply scrollbar-thin;
+  }
+
+  /* Apply to tabs content areas */
+  [data-radix-tabs-content] {
+    @apply scrollbar-glow;
+  }
+}

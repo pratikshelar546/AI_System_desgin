@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -13,7 +13,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { Button } from '@/components/ui/button';
-import { Save, Upload, Download, FileJson, Server } from 'lucide-react';
+import { Save, Upload, Download, FileJson, Server, CookingPot } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 import NodeToolbar from './NodeToolbar';
@@ -21,25 +21,22 @@ import EnhancedPropertiesPanel from './EnhancedPropertiesPanel';
 import AIReviewPanel from './AIReviewPanel';
 import ResizableSystemNode from './ResizableSystemNode';
 import { DiagramData, DiagramNode, DiagramEdge, SystemNodeData, AIReview } from '@/types/diagram';
-
-const nodeTypes = {
-  systemNode: ResizableSystemNode,
-};
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import AiGeneratorChat from './AiGenrator';
 
 const defaultEdgeOptions = {
   type: 'smoothstep',
   markerEnd: { 
     type: MarkerType.ArrowClosed,
-    width: 20,
-    height: 20,
-    color: 'hsl(217 91% 70%)'
+    width: 12,
+    height: 12,
+    color: 'hsl(217 91% 60%)'
   },
   style: { 
-    strokeWidth: 3, 
-    stroke: 'hsl(217 91% 70%)',
-    filter: 'drop-shadow(0 0 4px hsl(217 91% 70% / 0.3))'
+    strokeWidth: 2.5, 
+    stroke: 'hsl(217 91% 60%)',
   },
-  animated: true,
+  animated: false, // Disable animation for cleaner look
 };
 
 let nodeId = 0;
@@ -52,6 +49,18 @@ export default function ArchitectureDiagram() {
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [selectedNode, setSelectedNode] = useState<SystemNodeData | null>(null);
   const [showAIPanel, setShowAIPanel] = useState(false);
+  const [userDesign, setUserDesign] = useState<DiagramData | null>(null);
+  const nodeTypes = useMemo(() => ({
+    systemNode: (props: any) => <ResizableSystemNode {...props} updateNode={(nodeId: string, updates: Partial<SystemNodeData>) => {
+      setNodes((nds) =>
+        nds.map((node) =>
+          node.id === nodeId
+            ? { ...node, data: { ...node.data, ...updates } }
+            : node
+        )
+      );
+    }} />,
+  }), [setNodes]);
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -171,27 +180,186 @@ export default function ArchitectureDiagram() {
     toast({ title: 'Design exported successfully' });
   };
 
-  const loadDesign = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data: DiagramData = JSON.parse(e.target?.result as string);
-        setNodes(data.nodes || []);
-        setEdges(data.edges || []);
-        toast({ title: 'Design imported successfully' });
-      } catch (error) {
-        toast({ 
-          title: 'Import failed', 
-          description: 'Invalid file format',
-          variant: 'destructive' 
-        });
-      }
+  // Compact layout algorithm that minimizes space and edge overlap
+  const calculateNodePositions = (nodes: any[], edges: any[]) => {
+    const positions = new Map();
+    const nodeWidth = 180;
+    const nodeHeight = 120;
+    const minSpacing = 30; // Reduced spacing for compact layout
+    
+    // Define compact zones with tighter spacing
+    const zoneMapping = {
+      // Frontend zone
+      client: { x: 0, y: 0 }, frontend: { x: 0, y: 0 }, web: { x: 0, y: 0 }, mobile: { x: 0, y: 0 }, ui: { x: 0, y: 0 },
+      
+      // CDN zone (close to frontend)
+      cdn: { x: 0.4, y: -0.3 }, static: { x: 0.4, y: -0.3 }, assets: { x: 0.4, y: -0.3 },
+      
+      // Infrastructure zone
+      loadbalancer: { x: 1, y: 0 }, lb: { x: 1, y: 0 }, infrastructure: { x: 1, y: 0 }, proxy: { x: 1, y: 0 },
+      
+      // Gateway zone
+      gateway: { x: 1.6, y: 0 }, apigateway: { x: 1.6, y: 0 }, router: { x: 1.6, y: 0 }, ingress: { x: 1.6, y: 0 },
+      
+      // Security zone (above services)
+      security: { x: 2.2, y: -0.4 }, middleware: { x: 2.2, y: -0.4 }, auth: { x: 2.2, y: -0.4 }, mesh: { x: 2.2, y: -0.4 },
+      
+      // Services zone (main vertical stack)
+      service: { x: 2.2, y: 0 }, microservice: { x: 2.2, y: 0 }, backend: { x: 2.2, y: 0 },
+      
+      // Cache zone (below services)
+      cache: { x: 2.2, y: 0.6 }, redis: { x: 2.2, y: 0.6 }, memcache: { x: 2.2, y: 0.6 },
+      
+      // Queue zone (right of services)
+      queue: { x: 2.8, y: 0.2 }, kafka: { x: 2.8, y: 0.2 }, rabbitmq: { x: 2.8, y: 0.2 }, messaging: { x: 2.8, y: 0.2 },
+      
+      // Database zone (far right)
+      database: { x: 3.4, y: 0 }, db: { x: 3.4, y: 0 }, postgres: { x: 3.4, y: 0 }, mysql: { x: 3.4, y: 0 }, mongodb: { x: 3.4, y: 0 }, nosql: { x: 3.4, y: 0 },
+      
+      // Analytics zone (bottom right)
+      analytics: { x: 3.8, y: 0.5 }, monitoring: { x: 2.5, y: -0.8 }, logs: { x: 2.5, y: -0.8 }, metrics: { x: 2.5, y: -0.8 },
+      
+      // WebSocket zone (below gateway)
+      websocket: { x: 1.6, y: 0.6 }, realtime: { x: 1.6, y: 0.6 }, streaming: { x: 1.6, y: 0.6 }
     };
-    reader.readAsText(file);
-    event.target.value = '';
+    
+    // Compact spacing multipliers
+    const baseXSpacing = 280; // Reduced from 400px
+    const baseYSpacing = 180; // Reduced from 250px
+    const startX = 150; // Closer to left edge
+    const startY = 200; // Closer to top
+    
+    // Group nodes by type for better organization
+    const typeGroups = new Map();
+    nodes.forEach(node => {
+      console.log(node,"node");
+      const nodeType = (node.type || '').toLowerCase();
+      const zone = zoneMapping[nodeType as keyof typeof zoneMapping] || { x: 2.2, y: 0 };
+      
+      const key = `${zone.x}-${zone.y}`;
+      console.log(node.type,nodeType,zone,key);
+      
+      if (!typeGroups.has(key)) {
+        typeGroups.set(key, []);
+      }
+      typeGroups.set(key, [...typeGroups.get(key), node]);
+    });
+    
+    // Position nodes with compact layout
+    typeGroups.forEach((groupNodes, key) => {
+      const [zoneX, zoneY] = key.split('-').map(Number);
+      
+      groupNodes.forEach((node, index) => {
+        // Calculate base position
+        const x = startX + (zoneX * baseXSpacing);
+        const y = startY + (zoneY * baseYSpacing);
+        
+        // Add small vertical offset for multiple nodes in same zone
+        const offsetY = index * (nodeHeight + minSpacing);
+        
+        positions.set(node.id, { x, y: y + offsetY });
+      });
+    });
+    
+    // Final collision detection with minimal adjustments
+    const finalPositions = new Map();
+    positions.forEach((pos, nodeId) => {
+      let finalPos = { ...pos };
+      
+      finalPositions.forEach((existingPos, existingId) => {
+        if (existingId !== nodeId) {
+          const distance = Math.sqrt(
+            Math.pow(finalPos.x - existingPos.x, 2) + 
+            Math.pow(finalPos.y - existingPos.y, 2)
+          );
+          
+          if (distance < nodeWidth + minSpacing) {
+            // Minimal adjustment - just move slightly
+            finalPos.y += nodeHeight + minSpacing;
+          }
+        }
+      });
+      
+      finalPositions.set(nodeId, finalPos);
+    });
+    
+    return finalPositions;
+  };
+
+  // Generic function to load any architecture data from backend
+  const loadArchitectureData = (architectureData: any) => {
+    // Calculate smart positions
+    const positions = calculateNodePositions(architectureData.nodes, architectureData.edges);
+    
+    const nodes = architectureData.nodes.map((n: any) => ({
+      id: n.id,
+      type: "systemNode",
+      position: positions.get(n.id) || { x: 0, y: 0 },
+      data: {
+        id: n.id,
+        type: (n.type || 'service') as SystemNodeData['type'],
+        name: n.label || n.name || n.title || `Node ${n.id}`,
+        notes: n.description || n.notes || '',
+        width: 180,
+        height: 120,
+      }
+    }));
+  console.log(nodes,"nodes udpated");
+  
+    const edges = architectureData.edges.map((e: any, i: number) => ({
+      id: `e${i}`,
+      source: e.source,
+      target: e.target,
+      type: "smoothstep",
+      label: e.label || e.name || '',
+      style: { 
+        strokeWidth: 2, 
+        stroke: 'hsl(217 91% 60%)',
+        strokeDasharray: e.label?.includes('Cache') || e.label?.includes('Async') ? '4,4' : undefined,
+      },
+      markerEnd: { 
+        type: MarkerType.ArrowClosed,
+        width: 10,
+        height: 10,
+        color: 'hsl(217 91% 60%)'
+      },
+      // Add path offset to reduce edge overlap
+      pathOptions: {
+        offset: (i % 3) * 15 - 15, // -15, 0, +15 offset for parallel edges
+      },
+      labelStyle: {
+        fontSize: '11px',
+        fontWeight: '500',
+        fill: 'hsl(217 91% 60%)',
+        background: 'hsl(var(--background))',
+        padding: '1px 4px',
+        borderRadius: '3px',
+        border: '1px solid hsl(217 91% 60% / 0.3)',
+      },
+      labelBgStyle: {
+        fill: 'hsl(var(--background))',
+        fillOpacity: 0.95,
+        stroke: 'hsl(217 91% 60% / 0.3)',
+        strokeWidth: 1,
+      },
+    }));
+  
+    setNodes(nodes);
+    setEdges(edges);
+    
+    // Fit the view to show all nodes
+    setTimeout(() => {
+      if (reactFlowInstance) {
+        reactFlowInstance.fitView({ padding: 0.1 });
+      }
+    }, 100);
+    
+    toast({ title: 'Architecture loaded successfully' });
+  };
+
+  const loadDesign = () => {
+    // Use the generic function with our sample data
+    loadArchitectureData(userDesign || {});
   };
 
   const mockAIReview = async (data: DiagramData): Promise<AIReview> => {
@@ -214,11 +382,17 @@ export default function ArchitectureDiagram() {
         'Building Microservices by Sam Newman'
       ]
     };
-  };
+  };  
+useEffect(() => {
+  if(userDesign) {
+    loadDesign();
+  }
+}, [userDesign]);
 
   return (
     <div className="h-screen w-full bg-canvas flex">
-      <NodeToolbar onDragStart={onDragStart} />
+
+      {/* <NodeToolbar onDragStart={onDragStart} /> */}
       
       <div className="flex-1 flex flex-col">
         {/* Header */}
@@ -238,19 +412,17 @@ export default function ArchitectureDiagram() {
               Export Design
             </Button>
             
-            <Button variant="outline" size="sm" asChild className="hover:shadow-glow transition-all duration-300">
-              <label htmlFor="import-file" className="cursor-pointer">
-                <Upload className="w-4 h-4 mr-2" />
-                Import Design
-              </label>
+            <Button variant="outline" size="sm" onClick={() => loadDesign()} className="hover:shadow-glow transition-all duration-300">
+              <Upload className="w-4 h-4 mr-2" />
+              Load Polling Architecture
             </Button>
-            <input
+            {/* <input
               id="import-file"
               type="file"
               accept=".json"
               onChange={loadDesign}
               className="hidden"
-            />
+            /> */}
             
             <Button 
               variant={showAIPanel ? "default" : "outline"} 
@@ -312,6 +484,20 @@ export default function ArchitectureDiagram() {
           )}
         </div>
       </div>
+      <Tabs defaultValue='use-ai' className='bg-[#141414] border-l border-border h-screen flex flex-col'>
+        <TabsList className='bg-card/95 backdrop-blur-sm border-b border-border p-4 flex shadow-panel rounded-none h-18'>
+          <TabsTrigger value="node-toolbar" className='h-9 py-4'>System components</TabsTrigger>
+          <TabsTrigger value="use-ai" className='h-9'>Use AI</TabsTrigger>
+        </TabsList>
+        <TabsContent value="node-toolbar" className="flex-1 p-0">
+          <div className='h-full max-h-[calc(100vh-80px)] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100 hover:scrollbar-thumb-blue-400 scrollbar-thumb-rounded-lg scrollbar-track-rounded-lg'>
+            <NodeToolbar onDragStart={onDragStart} />
+          </div>
+        </TabsContent>
+        <TabsContent value="use-ai" className='h-full'>
+          <AiGeneratorChat userDesign={userDesign} setUserDesign={setUserDesign} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
