@@ -35,10 +35,10 @@ export default function AIReviewPanel({ diagramData, onGetReview }: AIReviewPane
   };
 
   return (
-    <div className="bg-card border-l border-border w-96 p-6 shadow-panel">
-      <div className="flex items-center gap-3 mb-6">
-        <Bot className="w-5 h-5 text-primary" />
-        <h3 className="text-lg font-semibold text-foreground">AI Review</h3>
+    <div className="bg-card border-l border-border w-full lg:w-96 p-3 sm:p-6 shadow-panel">
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+        <h3 className="text-base sm:text-lg font-semibold text-foreground">AI Review</h3>
       </div>
 
       <Button 

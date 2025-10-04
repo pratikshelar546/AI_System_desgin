@@ -23,6 +23,7 @@ import ResizableSystemNode from './ResizableSystemNode';
 import { DiagramData, DiagramNode, DiagramEdge, SystemNodeData, AIReview } from '@/types/diagram';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import AiGeneratorChat from './AiGenrator';
+import AllChats from './AllChats';
 
 const defaultEdgeOptions = {
   type: 'smoothstep',
@@ -392,12 +393,36 @@ useEffect(() => {
 }, [userDesign]);
 
   return (
-    <div className="h-screen w-full bg-canvas flex">
+    <div className="h-screen w-full bg-canvas flex flex-col lg:flex-row">
+      {/* Mobile Header - Only visible on mobile */}
+      <div className="lg:hidden bg-card/95 backdrop-blur-sm border-b border-border p-3 flex items-center justify-between shadow-panel">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <Server className="w-4 h-4 text-primary-foreground" />
+          </div>
+          <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+            Architecture Designer
+          </h1>
+        </div>
+        
+        <div className="flex items-center gap-1">
+          <Button variant="outline" size="sm" onClick={saveDesign} className="hover:shadow-glow transition-all duration-300 p-2">
+            <Download className="w-4 h-4" />
+          </Button>
+          
+          <Button 
+            variant={showAIPanel ? "default" : "outline"} 
+            size="sm"
+            onClick={() => setShowAIPanel(!showAIPanel)}
+            className="bg-gradient-primary hover:shadow-glow transition-all duration-300 p-2"
+          >
+            <FileJson className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
 
-      {/* <NodeToolbar onDragStart={onDragStart} /> */}
-      
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
+      {/* Desktop Header - Only visible on desktop */}
+      <div className="hidden lg:flex flex-1 flex-col">
         <div className="bg-card/95 backdrop-blur-sm border-b border-border p-4 flex items-center justify-between shadow-panel">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
@@ -418,13 +443,6 @@ useEffect(() => {
               <Upload className="w-4 h-4 mr-2" />
               Load Polling Architecture
             </Button>
-            {/* <input
-              id="import-file"
-              type="file"
-              accept=".json"
-              onChange={loadDesign}
-              className="hidden"
-            /> */}
             
             <Button 
               variant={showAIPanel ? "default" : "outline"} 
@@ -438,7 +456,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Desktop Main Content */}
         <div className="flex-1 flex">
           <div
             className="flex-1 bg-gradient-canvas"
@@ -486,7 +504,65 @@ useEffect(() => {
           )}
         </div>
       </div>
-      <Tabs defaultValue='use-ai' className='bg-[#141414] border-l border-border h-screen flex flex-col'>
+
+      {/* Mobile Main Content */}
+      <div className="lg:hidden flex-1 flex flex-col">
+        <div
+          className="flex-1 bg-gradient-canvas min-h-0"
+          ref={reactFlowWrapper}
+        >
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onNodeClick={onNodeClick}
+            onPaneClick={onPaneClick}
+            nodeTypes={nodeTypes}
+            defaultEdgeOptions={defaultEdgeOptions}
+            connectionRadius={20}
+            nodesDraggable={true}
+            nodesConnectable={true}
+            elementsSelectable={true}
+            fitView
+            className="bg-transparent"
+          >
+          </ReactFlow>
+        </div>
+        
+        {selectedNode && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+            <div className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto">
+              <EnhancedPropertiesPanel
+                selectedNode={selectedNode}
+                onUpdateNode={updateNode}
+                onClose={() => setSelectedNode(null)}
+              />
+            </div>
+          </div>
+        )}
+        
+        {showAIPanel && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+            <div className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto">
+              <AIReviewPanel
+                diagramData={{
+                  nodes: nodes as DiagramNode[],
+                  edges: edges as DiagramEdge[],
+                }}
+                onGetReview={mockAIReview}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Sidebar */}
+      <Tabs defaultValue='use-ai' className='hidden lg:flex bg-[#141414] border-l border-border h-screen flex-col w-80'>
         <TabsList className='bg-card/95 backdrop-blur-sm border-b border-border p-4 flex shadow-panel rounded-none h-18'>
           <TabsTrigger value="node-toolbar" className='h-9 py-4'>System components</TabsTrigger>
           <TabsTrigger value="use-ai" className='h-9'>Use AI</TabsTrigger>
@@ -497,9 +573,25 @@ useEffect(() => {
           </div>
         </TabsContent>
         <TabsContent value="use-ai" className='h-full'>
-          <AiGeneratorChat userDesign={userDesign} setUserDesign={setUserDesign} />
+          <AiGeneratorChat userDesign={userDesign} setUserDesign={setUserDesign} ><AllChats /></AiGeneratorChat>
         </TabsContent>
       </Tabs>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border shadow-panel z-40">
+        <Tabs defaultValue='use-ai' className='w-full'>
+          <TabsList className='w-full bg-transparent p-1 h-12'>
+            <TabsTrigger value="node-toolbar" className='flex-1 text-xs py-2'>Components</TabsTrigger>
+            <TabsTrigger value="use-ai" className='flex-1 text-xs py-2'>AI Chat</TabsTrigger>
+          </TabsList>
+          <TabsContent value="node-toolbar" className="fixed bottom-12 left-0 right-0 max-h-[50vh] overflow-y-auto bg-card border-t border-border">
+            <NodeToolbar onDragStart={onDragStart} />
+          </TabsContent>
+          <TabsContent value="use-ai" className="fixed bottom-12 left-0 right-0 max-h-[50vh] overflow-y-auto bg-card border-t border-border">
+            <AiGeneratorChat userDesign={userDesign} setUserDesign={setUserDesign} ><AllChats /></AiGeneratorChat>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

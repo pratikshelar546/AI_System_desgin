@@ -22,12 +22,12 @@ export default function EnhancedPropertiesPanel({
   };
 
   return (
-    <div className="w-80 bg-card border-l border-border shadow-panel overflow-hidden">
-      <div className="bg-gradient-primary p-4 border-b border-border/20">
+    <div className="w-full lg:w-80 bg-card border-l border-border shadow-panel overflow-hidden">
+      <div className="bg-gradient-primary p-3 sm:p-4 border-b border-border/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-primary-foreground" />
-            <h3 className="font-semibold text-primary-foreground">Node Properties</h3>
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
+            <h3 className="font-semibold text-primary-foreground text-sm sm:text-base">Node Properties</h3>
           </div>
           <Button 
             variant="ghost" 
@@ -40,7 +40,7 @@ export default function EnhancedPropertiesPanel({
         </div>
       </div>
       
-      <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
         {/* Basic Properties */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
